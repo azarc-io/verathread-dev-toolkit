@@ -99,6 +99,8 @@ jobs:
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: "Run Setup"
         run: task setup
+        env:
+          TAG: v5.6.3
       - name: "Create Cluster"
         run: task k3d:create
       - name: "Wait 1 Min"

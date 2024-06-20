@@ -1,0 +1,46 @@
+name: Verathread Developer Toolkit - PR
+
+on:
+  pull_request:
+    branches: [ 'main' ]
+    types:
+      - opened
+      - synchronize
+
+env:
+  AWS_REGION: eu-west-2
+  FORCE_COLOR: 1
+  DRY_RUN: false
+  DEPLOY: true
+  RUNNER_ALLOW_RUNASROOT: "1"
+  DOCKER_REGISTRY: ghcr.io/azarc-io/verathread-dev
+  GOLANGCILINT_VER: "v1.59.1"
+
+concurrency:
+  group: pr-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: "E2E Tests"
+    runs-on: ubuntu-latest
+    env:
+      GOLANGCILINT_VER: "v1.59.1"
+      GOPRIVATE: "github.com/azarc-io"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+      - name: "Setup Go"
+        uses: actions/setup-go@v5
+        with:
+          cache-dependency-path: go.sum
+          go-version-file: go.mod
+      - name: "Fix git URL"
+        run: git config --global url."https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
+      - name: "Lint"
+        uses: golangci/golangci-lint-action@v6.0.1
+        with:
+          version: ${{ env.GOLANGCILINT_VER }}
+          skip-cache: true
+      - name: "Run E2E Tests"
+        run: echo "TBD"

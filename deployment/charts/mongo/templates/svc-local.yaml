@@ -1,0 +1,28 @@
+{{- if .Values.local }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-local
+  labels:
+    app.kubernetes.io/component: mongodb
+    app.kubernetes.io/instance: mongodb
+    app.kubernetes.io/name: mongodb
+  annotations:
+    meta.helm.sh/release-name: mongodb
+    meta.helm.sh/release-namespace: vth
+status:
+  loadBalancer: { }
+spec:
+  ports:
+    - name: mongodb
+      protocol: TCP
+      port: 27017
+      targetPort: mongodb
+      nodePort: 31100
+  selector:
+    app.kubernetes.io/component: mongodb
+    app.kubernetes.io/instance: mongodb
+    app.kubernetes.io/name: mongodb
+  type: NodePort
+  sessionAffinity: None
+{{- end}}

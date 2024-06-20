@@ -21,7 +21,7 @@ tasks:
   setup:
     desc: "run this if you are starting with a fresh checkout, see readme for configuration instructions"
     cmds:
-      - "curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.6.3 bash"
+      - curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=$TAG bash
       - task: setup:env:template
       - task: k3d:install
     env:

@@ -1,12 +1,15 @@
 # Contributing
 
-Developers are expected to write and test their code on their local environments and in some cases remote environments
-when available.
+Developers are expected to test their changes locally before creating a Pull Request:
 
 You should only open a Pull Request when one of the below requirements are met:
 
-* You have been asked to provide a preview or demo of your work, in which case you should create a `draft` pr
-* You have tested your code locally and are confident your work is ready for peer review and QA
+* You have tested your changes locally and are confident your work is ready for peer review
+
+Once a PR is opened the E2E tests will run and a build will be attempted, 
+if all requirements are met the PR can be merged.
+
+Once a PR is merged a new pipeline will run which will Tag and Release the documentation.
 
 ## Project structure
 

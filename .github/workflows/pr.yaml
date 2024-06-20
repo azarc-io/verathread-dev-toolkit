@@ -109,4 +109,6 @@ jobs:
       - name: "Wait 1 Min"
         run: sleep 60
       - name: "Install Dependencies"
+        run: task k3d:install:charts
+      - name: "Run E2E Tests"
         run: k3d:install:charts

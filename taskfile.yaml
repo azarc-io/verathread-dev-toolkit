@@ -22,6 +22,7 @@ tasks:
     desc: "run this if you are starting with a fresh checkout, see readme for configuration instructions"
     cmds:
       - curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
+      - go install gotest.tools/gotestsum@latest
       - task: setup:env:template
       - task: k3d:install
 
@@ -102,3 +103,11 @@ tasks:
     dir: docs
     cmds:
       - mkdocs build
+
+  ##############################################################################
+  # TESTING
+  ##############################################################################
+
+  test:
+    cmds:
+      - gotestsum --jsonfile bin/toolkit_e2e.json --junitfile bin/toolkit_e2e.xml --format testname -- -timeout 15m -p 2 -count=1 ./test/e2e/...

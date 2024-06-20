@@ -30,40 +30,40 @@ jobs:
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
-#      - name: "Setup Go"
-#        uses: actions/setup-go@v5
-#        with:
-#          cache-dependency-path: go.sum
-#          go-version-file: go.mod
-#      - name: "Setup Python"
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: '3.9'
-#          cache: 'pip'
-#          cache-dependency-path: docs/requirements.txt
-#      - name: "Setup task"
-#        uses: arduino/setup-task@v2
-#        with:
-#          version: 3.x
-#          repo-token: ${{ secrets.GITHUB_TOKEN }}
-#      - name: "Fix git URL"
-#        run: git config --global url."https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
-#      - name: "Lint"
-#        uses: golangci/golangci-lint-action@v6.0.1
-#        with:
-#          version: ${{ env.GOLANGCILINT_VER }}
-#          skip-cache: true
-#      - name: "Install MkDocs Dependencies"
-#        working-directory: docs
-#        run: |
-#          pip install --upgrade pip
-#          task docs:install:deps
-#      - name: "Build Docs"
-#        working-directory: docs
-#        run: task docs:build
+      - name: "Setup Go"
+        uses: actions/setup-go@v5
+        with:
+          cache-dependency-path: go.sum
+          go-version-file: go.mod
+      - name: "Setup Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+          cache-dependency-path: docs/requirements.txt
+      - name: "Setup task"
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Fix git URL"
+        run: git config --global url."https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
+      - name: "Lint"
+        uses: golangci/golangci-lint-action@v6.0.1
+        with:
+          version: ${{ env.GOLANGCILINT_VER }}
+          skip-cache: true
+      - name: "Install MkDocs Dependencies"
+        working-directory: docs
+        run: |
+          pip install --upgrade pip
+          task docs:install:deps
+      - name: "Build Docs"
+        working-directory: docs
+        run: task docs:build
 
   e2e:
-    name: "Test Tasks"
+    name: "E2E Tests"
     runs-on: ubuntu-latest-4-cores
     needs:
       - verify
@@ -80,12 +80,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: "Set up Go"
+      - name: "Set up go"
         id: setup-go
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
-      - name: "Setup Helm"
+      - name: "Setup helm"
         uses: azure/setup-helm@v4.2.0
         with:
           version: v3.3.4
@@ -94,28 +94,40 @@ jobs:
         with:
           version: 3.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: "Calculate Variables"
+      - name: "Calculate variables"
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - name: "Run Setup"
+      - name: "Run setup"
         run: task setup
         env:
           TAG: v5.6.3
       - name: "Add hosts to /etc/hosts"
         run: |
           sudo echo "127.0.0.1 k3d-local-registry dev.cluster.local" | sudo tee -a /etc/hosts
-      - name: "Create Cluster"
+      - name: "Create cluster"
         run: task k3d:create
-      - name: "Wait 30 Seconds"
+      - name: "Wait 30 seconds"
         run: sleep 30
-      - name: "Install Dependencies"
+      - name: "Install dependencies"
         run: task k3d:install:charts
-      - name: "Run E2E Tests"
+      - name: "Run E2E tests"
         run: task test
-      - name: Upload test results
+      - name: "Capture logs"
+        run: |
+          mkdir -p bin
+          mkdir -p bin/logs
+          kubectl logs -l 'app=mongodb' --tail=-1 -n test-dev > bin/logs/mongo.log --all-containers
+          kubectl logs -l 'app.kubernetes.io/name=nats' --tail=-1 -n test-dev > bin/logs/nats.log --all-containers
+          kubectl logs -l 'app.kubernetes.io/name=dapr' --tail=-1 -n test-dev > bin/logs/dapr.log --all-containers
+      - name: "Upload test results"
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          #TODO: .json suffix can be removed from artifact name after test analytics scripts are updated
           name: toolkit_test_e2e.json
           path: bin/toolkit_e2e.*
+      - name: "Upload logs"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: toolkit_test_e2e.json
+          path: bin/logs/*.log

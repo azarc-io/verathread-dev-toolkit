@@ -116,7 +116,7 @@ jobs:
           mkdir -p bin/logs
           kubectl logs -l 'app=mongodb' --tail=-1 -n test-dev > bin/logs/mongo.log --all-containers
           kubectl logs -l 'app.kubernetes.io/name=nats' --tail=-1 -n test-dev > bin/logs/nats.log --all-containers
-          kubectl logs -l 'app.kubernetes.io/name=dapr' --tail=-1 -n test-dev > bin/logs/dapr.log --all-containers
+          kubectl logs -l 'app.kubernetes.io/name=dapr' --tail=-1 -n dapr-system > bin/logs/dapr.log --all-containers
       - name: "Upload test results"
         if: always()
         uses: actions/upload-artifact@v4

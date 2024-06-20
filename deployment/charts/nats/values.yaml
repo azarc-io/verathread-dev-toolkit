@@ -7,10 +7,6 @@ nats:
     enabled: true
   nats:
     externalAccess: false
-    config:
-      - name: accounts
-        secret:
-          secretName: nats-custom-conf
     jetstream:
       enabled: true
       domain: local

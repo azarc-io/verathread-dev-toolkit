@@ -94,6 +94,8 @@ jobs:
         with:
           version: 3.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Install kubectl"
+        uses: azure/setup-kubectl@v4
       - name: "Calculate variables"
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT

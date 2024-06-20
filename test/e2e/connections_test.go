@@ -3,6 +3,9 @@ package e2e
 import (
 	"context"
 	"fmt"
+	"sync"
+	"testing"
+
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 	"github.com/stretchr/testify/assert"
@@ -10,8 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"sync"
-	"testing"
 )
 
 func TestMongoDb(t *testing.T) {
@@ -91,7 +92,8 @@ func TestNats(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create consumer: %s", err)
 		}
-		if _, err := js.Publish(context.Background(), "FOO.TEST1", []byte("msg")); err != nil {
+
+		if _, err = js.Publish(context.Background(), "FOO.TEST1", []byte("msg")); err != nil {
 			fmt.Println("pub error: ", err)
 		}
 
@@ -100,8 +102,8 @@ func TestNats(t *testing.T) {
 		wg.Add(1)
 		cc, err := cons.Consume(func(msg jetstream.Msg) {
 			message = msg
-			if err := msg.Ack(); err != nil {
-				t.Fatalf("could not ack message: %s", err)
+			if err2 := msg.Ack(); err != nil {
+				t.Fatalf("could not ack message: %s", err2)
 			}
 			wg.Done()
 		}, jetstream.ConsumeErrHandler(func(consumeCtx jetstream.ConsumeContext, err error) {
@@ -115,6 +117,6 @@ func TestNats(t *testing.T) {
 		wg.Wait()
 
 		require.NotNil(t, message)
-		assert.Equal(t, string(message.Data()), "msg")
+		assert.Equal(t, "msg", string(message.Data()))
 	})
 }

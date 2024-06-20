@@ -1,4 +1,4 @@
-name: Verathread Developer Toolkit - PR
+name: Pull Request
 
 on:
   pull_request:
@@ -21,8 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  e2e:
-    name: "E2E Tests"
+  verify:
+    name: "Verify Docs"
     runs-on: ubuntu-latest
     env:
       GOLANGCILINT_VER: "v1.59.1"
@@ -35,6 +35,12 @@ jobs:
         with:
           cache-dependency-path: go.sum
           go-version-file: go.mod
+      - name: "Setup Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+          cache-dependency-path: docs/requirements.txt
       - name: "Fix git URL"
         run: git config --global url."https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
       - name: "Lint"
@@ -42,49 +48,70 @@ jobs:
         with:
           version: ${{ env.GOLANGCILINT_VER }}
           skip-cache: true
-      - name: "Run E2E Tests"
-        run: echo "TBD"
+      - name: "Install MkDocs Dependencies"
+        working-directory: docs
+        run: |
+          pip install --upgrade pip
+          task docs:install:deps
+      - name: "Build Docs"
+        working-directory: docs
+        run: task docs:build
 
-  documentation:
-    name: Release Documentation
+  e2e:
+    name: "Test Tasks"
     runs-on: ubuntu-latest
     needs:
-      - e2e
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
+      - verify
+    env:
+      REGISTRY_PORT: 5000
+      REGISTRY_NAME: kind-registry
+      GATEWAY_REGISTRY: localhost:5000/gateway
+      GATEWAY_WEB_REGISTRY: localhost:5000/gateway-web
+      GATEWAY_TAG: dev
+      NAMESPACE: gateway-tests
+    strategy:
+      fail-fast: false # Keep running if one leg fails.
+      matrix:
+        k8s-version:
+          - v1.24.7
+        # Map between K8s and KinD versions.
+        # This is attempting to make it a bit clearer what's being tested.
+        # See: https://github.com/kubernetes-sigs/kind/releases/tag/v0.11.1
+        include:
+          - k8s-version: v1.24.7
+            kind-version: v0.17.0
+            kind-image-sha: sha256:577c630ce8e509131eab1aea12c022190978dd2f745aac5eb1fe65c0807eb315
+          - k8s-version: v1.25.3
+            kind-version: v0.17.0
+            kind-image-sha: sha256:f52781bc0d7a19fb6c405c2af83abfeb311f130707a0e219175677e366cc45d1
+    # if: github.event_name != 'pull_request'
     steps:
-      - name: "Checkout Gateway"
+      - name: "Checkout"
         uses: actions/checkout@v4
-      - name: "Setup Pages"
-        uses: actions/configure-pages@v5
-      - name: "Setup Python"
-        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-          cache: 'pip'
-          cache-dependency-path: docs/requirements.txt
+          fetch-depth: 0
+      - name: "Set up Go"
+        id: setup-go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - name: "Setup Helm"
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: v3.3.4
       - name: "Setup task"
         uses: arduino/setup-task@v2
         with:
           version: 3.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Calculate Variables"
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: "Run Setup"
+        run: task setup
+      - name: "Create Cluster"
+        run: task k3d:create
+      - name: "Wait 1 Min"
+        run: sleep 60
       - name: "Install Dependencies"
-        working-directory: docs
-        run: |
-          pip install --upgrade pip
-          task docs:install:deps
-      - name: "Build"
-        working-directory: docs
-        run: task docs:build
-      - name: "Upload artifact"
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'docs/site'
-      - name: "Deploy to GitHub Pages"
-        id: deployment
-        uses: actions/deploy-pages@v4
+        run: k3d:install:charts

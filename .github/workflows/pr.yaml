@@ -70,10 +70,6 @@ jobs:
     env:
       REGISTRY_PORT: 5000
       REGISTRY_NAME: kind-registry
-      GATEWAY_REGISTRY: localhost:5000/gateway
-      GATEWAY_WEB_REGISTRY: localhost:5000/gateway-web
-      GATEWAY_TAG: dev
-      NAMESPACE: gateway-tests
     # if: github.event_name != 'pull_request'
     steps:
       - name: "Checkout"

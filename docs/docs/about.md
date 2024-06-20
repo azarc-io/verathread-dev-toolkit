@@ -18,4 +18,4 @@ See the roadmap for current and future features.
 - [x] Nats Messaging
 - [x] Dapr Control Plane
 - [ ] Minio Bucket Storage (S3 Compatible)
-- [ ] Fine-grained dependency installation, install only what you need and easily switch between dependencies
+- [ ] Fine-grained dependency installation, install only what you need and easily toggle needed dependencies

@@ -101,6 +101,9 @@ jobs:
         run: task setup
         env:
           TAG: v5.6.3
+      - name: "Add hosts to /etc/hosts"
+        run: |
+          sudo echo "127.0.0.1 k3d-local-registry dev.cluster.local" | sudo tee -a /etc/hosts
       - name: "Create Cluster"
         run: task k3d:create
       - name: "Wait 1 Min"

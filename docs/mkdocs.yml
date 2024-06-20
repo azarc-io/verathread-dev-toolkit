@@ -51,6 +51,9 @@ nav:
 - About: about.md
 - Getting Started: gs_setup.md
 - Command Line Usage: commands.md
+- Services:
+    - services/mongo.md
+    - services/nats.md
 - Community:
     - contributing.md
 

@@ -60,6 +60,21 @@ jobs:
         run: |
           mkdir -p bin
           zip -r bin/site.zip docs/site
+#      - name: "Changelog"
+#        uses: scottbrenner/generate-changelog-action@v1.3.3
+#        id: changelog
+#        with:
+#          to-tag: ${{ steps.tag.outputs.tag }}
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+#          body: |
+#            ${{ steps.changelog.outputs.changelog }}
+          tag_name: ${{ steps.tag.outputs.tag }}
+          generate_release_notes: true
+          repository: azarc-io/verathread-dev-toolkit
+          token: ${{ secrets.PAT_TOKEN }}
+
       - uses: "marvinpinto/action-automatic-releases@v1.2.1"
         with:
           repo_token: "${{ secrets.PAT_TOKEN }}"

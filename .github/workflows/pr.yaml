@@ -48,6 +48,17 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: "Fix git URL"
         run: git config --global url."https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          #          body: |
+          #            ${{ steps.changelog.outputs.changelog }}
+          tag_name: v1.3.0
+          generate_release_notes: true
+          repository: azarc-io/verathread-dev-toolkit
+          token: ${{ secrets.PAT_TOKEN }}
+
       - name: "Install MkDocs Dependencies"
         working-directory: docs
         run: |

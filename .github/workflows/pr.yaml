@@ -48,11 +48,6 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: "Fix git URL"
         run: git config --global url."https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
-      - name: "Lint"
-        uses: golangci/golangci-lint-action@v6.0.1
-        with:
-          version: ${{ env.GOLANGCILINT_VER }}
-          skip-cache: true
       - name: "Install MkDocs Dependencies"
         working-directory: docs
         run: |
@@ -61,6 +56,11 @@ jobs:
       - name: "Build Docs"
         working-directory: docs
         run: task docs:build
+      - name: "Lint"
+        uses: golangci/golangci-lint-action@v6.0.1
+        with:
+          version: ${{ env.GOLANGCILINT_VER }}
+          skip-cache: true
 
   e2e:
     name: "E2E Tests"
@@ -111,6 +111,7 @@ jobs:
       - name: "Run E2E tests"
         run: task test
       - name: "Capture logs"
+        if: always()
         run: |
           mkdir -p bin
           mkdir -p bin/logs

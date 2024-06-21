@@ -48,6 +48,37 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: "Fix git URL"
         run: git config --global url."https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
+      - name: "Build Docs"
+        working-directory: docs
+        run: task docs:build
+      - name: Changelog
+        uses: scottbrenner/generate-changelog-action@v1.3.3
+        id: changelog
+        with:
+          from-tag: v1.1.0
+          to-tag: v1.2.0
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: v1.2.0
+          release_name: Release v1.2.0
+          body: |
+            ${{ steps.changelog.outputs.changelog }}
+      - name: Create Site Package
+        run: zip -r bin/site.zip docs/site
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./bin/site.zip
+          asset_name: site.zip
+          asset_content_type: application/zip
       - name: "Lint"
         uses: golangci/golangci-lint-action@v6.0.1
         with:
@@ -58,21 +89,6 @@ jobs:
         run: |
           pip install --upgrade pip
           task docs:install:deps
-      - name: "Build Docs"
-        working-directory: docs
-        run: task docs:build
-      - name: Changelog
-        uses: scottbrenner/generate-changelog-action@v1.3.3
-        id: changelog
-        with:
-          from-tag: v1.1.0
-          to-tag: v1.2.0
-      - uses: ncipollo/release-action@v1
-        with:
-          artifacts: "docs/site/**"
-          tag: v1.2.0
-          body: |
-            ${{ steps.changelog.outputs.changelog }}
 
   e2e:
     name: "E2E Tests"

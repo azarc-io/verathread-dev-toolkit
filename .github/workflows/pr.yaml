@@ -73,7 +73,9 @@ jobs:
           body: |
             ${{ steps.changelog.outputs.changelog }}
       - name: Create Site Package
-        run: zip -r bin/site.zip docs/site
+        run: |
+          mkdir -p bin
+          zip -r bin/site.zip docs/site
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1

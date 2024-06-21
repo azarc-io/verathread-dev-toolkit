@@ -56,6 +56,17 @@ jobs:
           WITH_V: true
           DEFAULT_BUMP: minor
           INITIAL_VERSION: 1.0.0
+      - name: Changelog
+        uses: scottbrenner/generate-changelog-action@v1.3.3
+        id: changelog
+        with:
+          to-tag: ${{ steps.tag.outputs.tag }}
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "docs/site/**"
+          tag: ${{ steps.tag.outputs.tag }}
+          body: |
+            ${{ steps.changelog.outputs.changelog }}
       - name: "Deploy to GitHub Pages"
         id: deployment
         uses: actions/deploy-pages@v4

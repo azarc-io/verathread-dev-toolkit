@@ -48,6 +48,14 @@ task setup
 
 This will create a .env file in the root of the project, install the tilt cli and install the K3D cli.
 
+!!! info
+
+    Please see the [Environment File](#environment-file) section below for information about setting up your .env file correctly.
+
+!!! note
+
+    Tilt is not used by this project but is used by applications that use this toolkit for development.
+
 ### Host Names
 
 In order to make ingress work you will need to add some records to your hosts file, we will be adding two
@@ -80,7 +88,7 @@ are running kube on a separate machine you can use that machines ip address.
             - server:*
     ```
 
-### Environment Files
+### Environment File
 
 Edit the `.env` file in the root of the project and update the values
 

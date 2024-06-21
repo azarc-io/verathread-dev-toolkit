@@ -1,0 +1,131 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [ 'main' ]
+    types:
+      - opened
+      - synchronize
+
+env:
+  AWS_REGION: eu-west-2
+  FORCE_COLOR: 1
+  DRY_RUN: false
+  DEPLOY: true
+  RUNNER_ALLOW_RUNASROOT: "1"
+  DOCKER_REGISTRY: ghcr.io/azarc-io/verathread-dev
+  GOLANGCILINT_VER: "v1.59.1"
+
+concurrency:
+  group: pr-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: "Verify Docs"
+    runs-on: ubuntu-latest
+    env:
+      GOLANGCILINT_VER: "v1.59.1"
+      GOPRIVATE: "github.com/azarc-io"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+      - name: "Setup Go"
+        uses: actions/setup-go@v5
+        with:
+          cache-dependency-path: go.sum
+          go-version-file: go.mod
+      - name: "Setup Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+          cache-dependency-path: docs/requirements.txt
+      - name: "Setup task"
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Fix git URL"
+        run: git config --global url."https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
+      - name: "Lint"
+        uses: golangci/golangci-lint-action@v6.0.1
+        with:
+          version: ${{ env.GOLANGCILINT_VER }}
+          skip-cache: true
+      - name: "Install MkDocs Dependencies"
+        working-directory: docs
+        run: |
+          pip install --upgrade pip
+          task docs:install:deps
+      - name: "Build Docs"
+        working-directory: docs
+        run: task docs:build
+
+  e2e:
+    name: "E2E Tests"
+    runs-on: ubuntu-latest-4-cores
+    needs:
+      - verify
+    env:
+      REGISTRY_PORT: 5000
+      REGISTRY_NAME: kind-registry
+    # if: github.event_name != 'pull_request'
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Set up go"
+        id: setup-go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - name: "Setup helm"
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: v3.3.4
+      - name: "Setup task"
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Install kubectl"
+        uses: azure/setup-kubectl@v4
+      - name: "Calculate variables"
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: "Run setup"
+        run: task setup
+        env:
+          TAG: v5.6.3
+      - name: "Add hosts to /etc/hosts"
+        run: |
+          sudo echo "127.0.0.1 k3d-local-registry dev.cluster.local" | sudo tee -a /etc/hosts
+      - name: "Create cluster"
+        run: task k3d:create
+      - name: "Wait 30 seconds"
+        run: sleep 30
+      - name: "Install dependencies"
+        run: task k3d:install:charts
+      - name: "Run E2E tests"
+        run: task test
+      - name: "Capture logs"
+        run: |
+          mkdir -p bin
+          mkdir -p bin/logs
+          kubectl logs -l 'app=mongodb' --tail=-1 -n test-dev > bin/logs/mongo.log --all-containers
+          kubectl logs -l 'app.kubernetes.io/name=nats' --tail=-1 -n test-dev > bin/logs/nats.log --all-containers
+          kubectl logs -l 'app.kubernetes.io/name=dapr' --tail=-1 -n dapr-system > bin/logs/dapr.log --all-containers
+      - name: "Upload test results"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: toolkit_test_e2e.json
+          path: bin/toolkit_e2e.*
+      - name: "Upload logs"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: bin/logs/*.log

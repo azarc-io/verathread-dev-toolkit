@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-keyfile
+data:
+  keyfile: |
+    yewyiHuCA5z98Z32fFmozSBiWbr708Tu8GKJ2kNcpyfIyWVe7tGRd9C3g0jQONnN
+    OtEYXvOhlrgc7YUv7dSYe8Nl9HgHh56MFo6NbxD9UocOJE0VhEkaGEfP4Jus+3A/
+    iKmlN360Df3Haa+kGT0Tw3vV3CjS+CUhyQwqCGPYOBedQ7PX11mPiwWEvzk1Yjj2
+    g90FABHBkt6OOMSBE7Ea4cLCBAls5Q3x1wanrlNFrUsyv/ywPeo8lPfix6yOA/tl
+    KECmt6OA1aR6yLgZjAcfXstfXnefXBzABczCXn8zBNym6j00FXdx1MHjw0dd89mK
+    2mJ4R51gVx4GE34j0sfb2IdT7mUpI2Aq1Sw+OW2v1wB5YrEaGPgNK2xDgYi3bDn7
+    JvMle8JkDBM08Xr/mCmWOv6nne2X6ltNwg5AmQFap+ygp0atCjQkEYAaNcFLQa4N
+    zVYjZQYnoSBLN/2vDoFLPQJjwHPNq+VJsGB0i8WM1n/ETnfA+iEPCe5RWhKH//ZS
+    apdmYPlrP0QSyv1iC8HjA/f7SLr8d0sR4TqGMikUvl/YEVWSeFGXanPylQgWvWTv
+    nKODmLYlV4k9n0pu/ObJyZjxQ5U0hiVYRw5xrDtvHDH15pHJFqnI//KLHUHHGeF6
+    IQu5yMWAHH3TYllAPiCFPhBo5wl5xJ1cz1yy8e9BPyCqy1khYk7hetdBLNMYffK5
+    Efqs96Eyhl9Q/EVkUlvHMO7hiTLoYn6xrolEsm8yEDF6yw1Y++6VZC3BZdWnd7NF
+    BqeAoVBRTx7s998kBTL4IGVMX5c/jX06s8y/LQWRMUDZgjO5og3EyWLhrti0AcYb
+    sFA92G69TmhSV00icxSrrGGppThAji6WNu64Q/AdnhVP2Sur1oCIwprvmkYgDYu0
+    68VQIpFi84Df5LHUkeztJoYgcdZDk2dnOwdM5RUYuwMLXU0fqiAztfDIDqZc7VEm
+    k8skZqTUO50K0x3gX8lq3Kyjv1217pb33zlF7WK79uWXSqcw
+
+

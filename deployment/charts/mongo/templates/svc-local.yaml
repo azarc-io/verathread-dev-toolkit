@@ -1,0 +1,19 @@
+{{- if .Values.local }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-local
+status:
+  loadBalancer: { }
+spec:
+  ports:
+    - name: mongodb
+      protocol: TCP
+      port: 27017
+      targetPort: mongodb
+      nodePort: 31100
+  selector:
+    app: mongodb
+  type: NodePort
+  sessionAffinity: None
+{{- end}}

@@ -1,0 +1,124 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+##############################################################################
+# DOT ENV SUPPORT
+##############################################################################
+
+dotenv:
+  - .env
+
+env:
+  BINARY_NAME: vth-gateway
+  GIT_REPO: https://github.com/azarc-io/verathread-gateway
+
+tasks:
+  ##############################################################################
+  # SETUP
+  ##############################################################################
+
+  setup:
+    desc: "run this if you are starting with a fresh checkout, see readme for configuration instructions"
+    cmds:
+      - curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
+      - go install gotest.tools/gotestsum@latest
+      - task: setup:env:template
+      - task: k3d:install
+
+  setup:env:template:
+    desc: "copies the .env template to the root of the project, will not overwrite if existing"
+    internal: true
+    cmds:
+      - cp deployment/template/env .env
+    status:
+      - test -f ./.env
+
+  ##############################################################################
+  # K3D
+  ##############################################################################
+
+  k3d:install:
+    cmds:
+      - curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=$TAG bash
+    env:
+      TAG: v5.6.3
+
+  k3d:create:
+    desc: "Creates a new cluster, only run this if you don't have an existing cluster"
+    cmds:
+      - k3d cluster create --config deployment/k3d/cluster.yaml
+
+  k3d:start:
+    desc: "Starts the cluster but only if it was previously stopped using k3d:stop"
+    cmds:
+      - k3d cluster start dev-1
+
+  k3d:stop:
+    desc: "Stops the cluster"
+    cmds:
+      - k3d cluster stop dev-1
+
+  k3d:delete:
+    desc: "Destroys the cluster"
+    cmds:
+      - k3d cluster delete dev-1
+
+  k3d:install:charts:
+    desc: "Installs dependency charts"
+    cmds:
+      - helm upgrade --install dapr  --create-namespace ./deployment/charts/dapr  --namespace dapr-system --wait
+      - helm upgrade --install nats  --create-namespace ./deployment/charts/nats  --namespace $NAMESPACE --wait
+      - helm upgrade --install mongo --create-namespace ./deployment/charts/mongo --namespace $NAMESPACE --wait
+
+  k3d:delete:charts:
+    desc: "Deletes all the charts installed by k3d:install:charts"
+    cmds:
+      - helm delete dapr --namespace dapr-system
+      - helm delete nats --namespace $NAMESPACE
+      - helm delete mongo --namespace $NAMESPACE
+
+  ##############################################################################
+  # DOCS
+  ##############################################################################
+
+  docs:install:deps:
+    desc: "installs python dependencies for mkdocs - requires python 3+"
+    dir: docs
+    cmds:
+      - |
+        pip install \
+          mkdocs pymdown-extensions mkdocs-material \
+          mkdocs-extra-sass-plugin mkdocs-minify-plugin mkdocs-redirects livereload mkdocs-glightbox \
+          mkdocs-mermaid2-plugin mkdocs-drawio-file
+
+  docs:serve:
+    desc: "builds and serves documentation"
+    dir: docs
+    cmds:
+      - mkdocs serve
+
+  docs:build:
+    desc: "builds documentation and outputs to docs/site"
+    dir: docs
+    cmds:
+      - mkdocs build
+
+  ##############################################################################
+  # TESTING
+  ##############################################################################
+
+  test:
+    desc: "runs e2e tests using gotestsum"
+    cmds:
+      - gotestsum --jsonfile bin/toolkit_e2e.json --junitfile bin/toolkit_e2e.xml --format testname -- -timeout 15m -p 2 -count=1 ./test/e2e/...
+
+  lint:
+    desc: "lints go code using golangci"
+    cmds:
+      - golangci-lint run
+
+  lint:fix:
+    desc: "lints go code using golangci and attempts to apply fixes"
+    cmds:
+      - golangci-lint run --fix

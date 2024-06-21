@@ -6,17 +6,13 @@ on:
       - main
 
 env:
-  MODULE_NAME: "vth-module-netutils"
   RUNNER_ALLOW_RUNASROOT: "1"
   GOPRIVATE: "github.com/azarc-io"
 
 jobs:
   release:
     name: "Tag & Release Documentation"
-    runs-on: ubuntu-20.04
-    needs: [ tag ]
-    outputs:
-      registry: ${{ steps.ecr.outputs.repository-uri }}
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4

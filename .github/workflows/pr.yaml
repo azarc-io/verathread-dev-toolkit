@@ -111,6 +111,7 @@ jobs:
       - name: "Run E2E tests"
         run: task test
       - name: "Capture logs"
+        if: always()
         run: |
           mkdir -p bin
           mkdir -p bin/logs

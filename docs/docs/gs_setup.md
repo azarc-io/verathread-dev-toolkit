@@ -1,10 +1,5 @@
 # Setup Environment
 
-!!! note
-
-    If you have already setup k3d, task.dev and other tooling in one of our other projects then
-    you can skip this document.
-
 ### Task.dev CLI
 
 This is a replacement for make, it provides a much simpler syntax and is well documented.
@@ -98,3 +93,70 @@ the projects you are working on.
 !!! warning
 
     You must set the same value for `NAMESPACE` in all projects
+
+### Create your cluster
+
+To create your cluster run:
+
+```shell
+task k3d:create
+```
+
+!!! note
+
+    You can later run `task k3d:stop` to stop the cluster and `task k3d:start` to bring it back up without loosing your 
+    state, if you want to rebuild your cluster you can run `task k3d:delete` and then repeat the steps outlined in this step
+    to re-create your cluster.
+
+Once the above task has completed you should use [lens](https://k8slens.dev/) or [kubectl](https://kubernetes.io/docs/tasks/tools/)
+in order to first verify your server is up and running before continuing to the next step.
+
+!!! info
+
+    Lens provide a free developer licence once you sign up.
+
+    When you open Lens you will see an icon at the top left of the app:
+
+    ![image](static/lens_catalog.png)
+    
+    Click on the catalogue icon (highlighted) and you should see a list of available servers that you can connect to, find
+    the one called k3d-dev-1 and click on the little pin to add it to your hot bar. You can now click on that icon to
+    begin browsing your local server.
+
+Try running the below commands if you are using `kubectl`:
+```shell
+kubectl get nodes
+
+# should output
+NAME                 STATUS   ROLES                  AGE     VERSION
+k3d-dev-1-agent-0    Ready    <none>                 3h36m   v1.24.13+k3s1
+k3d-dev-1-server-0   Ready    control-plane,master   3h36m   v1.24.13+k3s1
+
+kubectl get pods -n kube-system
+
+# should output
+NAME                                      READY   STATUS    RESTARTS   AGE
+coredns-74448699cf-7d8xb                  1/1     Running   0          3h37m
+local-path-provisioner-597bc7dccd-vctm2   1/1     Running   0          3h37m
+svclb-traefik-5ddc759c-wjk27              2/2     Running   0          3h37m
+svclb-traefik-5ddc759c-mcwts              2/2     Running   0          3h37m
+traefik-64b96ccbcd-mcnrm                  1/1     Running   0          3h37m
+metrics-server-667586758d-2vv6x           1/1     Running   0          3h37m
+```
+
+### Install Dependencies
+
+Finally Run 
+
+```shell
+task k3d:install:charts
+```
+
+to install [dapr](https://docs.dapr.io/), [mongo](https://www.mongodb.com/docs/)
+and [nats](https://docs.nats.io/), this will deploy the helm charts for you, you can later run `task k3d:delete:charts` to
+uninstall them if you wish.
+
+### You are good to go
+
+Great you are now ready to switch to your project and start working, check the documentation in each project for instruction
+on how to get up and running.

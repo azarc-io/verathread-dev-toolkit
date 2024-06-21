@@ -48,6 +48,11 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: "Fix git URL"
         run: git config --global url."https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
+      - name: "Install MkDocs Dependencies"
+        working-directory: docs
+        run: |
+          pip install --upgrade pip
+          task docs:install:deps
       - name: "Build Docs"
         working-directory: docs
         run: task docs:build
@@ -84,11 +89,6 @@ jobs:
         with:
           version: ${{ env.GOLANGCILINT_VER }}
           skip-cache: true
-      - name: "Install MkDocs Dependencies"
-        working-directory: docs
-        run: |
-          pip install --upgrade pip
-          task docs:install:deps
 
   e2e:
     name: "E2E Tests"

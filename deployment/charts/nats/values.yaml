@@ -7,6 +7,8 @@ nats:
     enabled: true
   nats:
     externalAccess: false
+    limits:
+      maxPayload: "8mb"
     jetstream:
       enabled: true
       domain: local

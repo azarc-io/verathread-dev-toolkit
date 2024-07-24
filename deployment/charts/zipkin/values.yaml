@@ -1,0 +1,4 @@
+zipkin:
+  nameOverride: "zipkin"
+  fullnameOverride: "zipkin"
+

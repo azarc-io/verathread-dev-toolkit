@@ -1,0 +1,4 @@
+dependencies:
+  - name: zipkin
+    version: 0.3.3
+    repository: https://zipkin.io/zipkin-helm

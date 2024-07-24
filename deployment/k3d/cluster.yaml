@@ -29,6 +29,10 @@ ports:
   - port: 8222:31822
     nodeFilters:
       - loadbalancer
+  # Garney
+  - port: 6379:31379
+    nodeFilters:
+      - loadbalancer
 registries:
   create: # creates a default registry to be used with the cluster; same as `--registry-create registry.localhost`
     name: k3d-local-registry

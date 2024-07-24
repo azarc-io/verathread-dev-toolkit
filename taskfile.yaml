@@ -26,6 +26,14 @@ tasks:
       - task: setup:env:template
       - task: k3d:install
 
+  setup:container:
+    desc: "run this if you are starting with a fresh checkout, see readme for configuration instructions"
+    cmds:
+      - curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
+      - go install gotest.tools/gotestsum@latest
+      - task: setup:env:template
+      - task: k3d:install
+
   setup:env:template:
     desc: "copies the .env template to the root of the project, will not overwrite if existing"
     internal: true
@@ -67,16 +75,16 @@ tasks:
   k3d:install:charts:
     desc: "Installs dependency charts"
     cmds:
-      - helm upgrade --install dapr  --create-namespace ./deployment/charts/dapr  --namespace dapr-system --wait
       - helm upgrade --install nats  --create-namespace ./deployment/charts/nats  --namespace $NAMESPACE --wait
       - helm upgrade --install mongo --create-namespace ./deployment/charts/mongo --namespace $NAMESPACE --wait
+      - helm upgrade --install keydb --create-namespace ./deployment/charts/keydb --namespace $NAMESPACE --wait
 
   k3d:delete:charts:
     desc: "Deletes all the charts installed by k3d:install:charts"
     cmds:
-      - helm delete dapr --namespace dapr-system
       - helm delete nats --namespace $NAMESPACE
       - helm delete mongo --namespace $NAMESPACE
+      - helm delete keydb --namespace $NAMESPACE
 
   ##############################################################################
   # DOCS

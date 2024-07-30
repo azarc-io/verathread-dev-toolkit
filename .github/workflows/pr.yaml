@@ -99,6 +99,7 @@ jobs:
         run: task setup
         env:
           TAG: v5.6.3
+          GHCR_DOCKER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "Add hosts to /etc/hosts"
         run: |
           sudo echo "127.0.0.1 k3d-local-registry dev.cluster.local" | sudo tee -a /etc/hosts

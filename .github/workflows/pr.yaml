@@ -70,6 +70,7 @@ jobs:
     env:
       REGISTRY_PORT: 5000
       REGISTRY_NAME: kind-registry
+      GHCR_DOCKER_TOKEN: ${{ secrets.GHCR_DOCKER_TOKEN }}
     # if: github.event_name != 'pull_request'
     steps:
       - name: "Checkout"
@@ -99,7 +100,6 @@ jobs:
         run: task setup
         env:
           TAG: v5.6.3
-          GHCR_DOCKER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "Add hosts to /etc/hosts"
         run: |
           sudo echo "127.0.0.1 k3d-local-registry dev.cluster.local" | sudo tee -a /etc/hosts

@@ -90,9 +90,13 @@ Edit the `.env` file in the root of the project and update the values
 Set your `NAMESPACE` to a value such as `<YOUR FIRST NAME>-dev` you must make sure that the same value is set in
 the projects you are working on.
 
+Set your `GHCR_DOCKER_TOKEN` to your GitHub personal access token, this is required to allow kubernetes to pull down docker
+images from private repositories.
+
 !!! warning
 
-    You must set the same value for `NAMESPACE` in all projects
+    You must set the same value for `NAMESPACE` in all projects in order for applications to be deployed into the same
+    namespace.
 
 ### Create your cluster
 
@@ -152,9 +156,9 @@ Finally Run
 task k3d:install:charts
 ```
 
-to install [dapr](https://docs.dapr.io/), [mongo](https://www.mongodb.com/docs/)
-and [nats](https://docs.nats.io/), this will deploy the helm charts for you, you can later run `task k3d:delete:charts` to
-uninstall them if you wish.
+to install [Keydb](https://docs.keydb.dev/), [Mongo](https://www.mongodb.com/docs/), [Nats](https://docs.nats.io/) and
+the [Verathread Gateway](https://gateway-docs.cloud.azarc.dev/) this will deploy the helm charts for you, 
+you can later run `task k3d:delete:charts` to uninstall them if you wish.
 
 ### You are good to go
 

@@ -1,0 +1,3 @@
+vth-gateway:
+  imagePullSecrets:
+    - name: ghcr-login-secret

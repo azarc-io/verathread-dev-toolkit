@@ -48,7 +48,7 @@ coverage.txt
 /kubeconfig
 dist/
 /debug/
-/cmd/webv2/.angular/cache/15.1.1/
+/cli/cmd/webv2/.angular/cache/15.1.1/
 /load_test/parca/
 data/
 curl/

@@ -1,0 +1,57 @@
+﻿services:
+  ##################################################################################
+  # GLOBAL COMMON SERVICES
+  ##################################################################################
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_dev
+    environment:
+      MONGO_APP_DATABASE: vth-gateway
+      MONGO_REPLICA_HOST: host.docker.internal
+      MONGO_REPLICA_PORT: 27018
+    entrypoint: >
+      /bin/bash -c '
+      echo "rs.initiate()" > /docker-entrypoint-initdb.d/1-init-replicaset.js &&
+      echo "db = db.getSiblingDB(process.env[$0]);" > /docker-entrypoint-initdb.d/2-init-db-collection.js &&
+      echo "db.createCollection($1, { capped: false });" >> /docker-entrypoint-initdb.d/2-init-db-collection.js &&
+      echo "db.init.insert([{ message: $2 }]);" >> /docker-entrypoint-initdb.d/2-init-db-collection.js &&
+      /usr/local/bin/docker-entrypoint.sh mongod --replSet rs0 --bind_ip_all --noauth' "'MONGO_APP_DATABASE'" "'init'" "'db initialized successfully'"
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./.data/mongodb:/data/db
+      - ./.data/mongodb/opt:/opt/keyfile/
+
+  keydb:
+    image: eqalpha/keydb
+    container_name: keydb
+    command: keydb-server --server-threads 2
+    volumes:
+      #      - ./redis.conf:/etc/keydb/redis.conf
+      - ./.data/keydb:/data
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+
+  nats:
+    image: nats
+    ports:
+      - "4222:4222"
+    command: "--cluster_name dev"
+    volumes:
+      - ./.data/nats:/data
+
+  gateway:
+    image: ghcr.io/azarc-io/verathread-gateway/gateway-aio:v1.59.0
+    environment:
+      CONFIG_DIR: /config
+      BASE_CONTEXT: base
+      CONFIG_CONTEXTS: aio
+    ports:
+      - "6010:6010"
+      - "6011:6011"
+#    depends_on:
+#      - mongodb_dev
+#      - keydb
+#      - nats

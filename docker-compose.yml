@@ -5,7 +5,7 @@
 
   mongodb:
     image: mongo:latest
-    container_name: mongodb_dev
+    container_name: mongodb
     environment:
       MONGO_APP_DATABASE: vth-gateway
       MONGO_REPLICA_HOST: host.docker.internal
@@ -43,7 +43,7 @@
       - ./.data/nats:/data
 
   gateway:
-    image: ghcr.io/azarc-io/verathread-gateway/gateway-aio:v1.59.0
+    image: ghcr.io/azarc-io/verathread-gateway/gateway-aio:v1.60.0
     environment:
       CONFIG_DIR: /config
       BASE_CONTEXT: base
@@ -51,7 +51,7 @@
     ports:
       - "6010:6010"
       - "6011:6011"
-#    depends_on:
-#      - mongodb_dev
-#      - keydb
-#      - nats
+    depends_on:
+      - mongodb
+      - keydb
+      - nats

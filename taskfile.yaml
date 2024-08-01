@@ -140,7 +140,7 @@ tasks:
   # TESTING
   ##############################################################################
 
-  test:
+  test:e2e:
     desc: "runs e2e tests using gotestsum"
     cmds:
       - gotestsum --jsonfile bin/toolkit_e2e.json --junitfile bin/toolkit_e2e.xml --format testname -- -timeout 15m -p 2 -count=1 ./test/e2e/...

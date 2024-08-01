@@ -44,10 +44,6 @@
 
   gateway:
     image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:v1.61.0
-    environment:
-      CONFIG_DIR: /config
-      BASE_CONTEXT: base
-      CONFIG_CONTEXTS: aio
     ports:
       - "6010:6010"
       - "6011:6011"

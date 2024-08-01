@@ -51,6 +51,7 @@
     ports:
       - "6010:6010"
       - "6011:6011"
+      - "3000:3000"
     depends_on:
       - mongodb
       - keydb

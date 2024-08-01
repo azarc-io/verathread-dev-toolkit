@@ -67,8 +67,8 @@ func (i *InitCmd) Cmd(cmd *cobra.Command, args []string) error {
 
 	i.pwd = pwd
 	i.projectName = filepath.Base(pwd)
-	i.publicPort = "6010"
-	i.privatePort = "6011"
+	i.publicPort = "6020"
+	i.privatePort = "6021"
 	i.webPort = "3001"
 	i.debugPort = "40001"
 

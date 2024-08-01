@@ -1,0 +1,15 @@
+vth-gateway:
+  # exclude the web sidecar, we want to use the dev image here for hmr capability
+  web: false
+  # switch image to the dev version
+  image:
+    # the gateway image
+    repository: ghcr.io/azarc-io/verathread-gateway/gateway-dev
+  imagePullSecrets:
+    - name: ghcr-login-secret
+  configuration:
+    gateway:
+      # disable static file serving
+      web_dir: ""
+      # enable proxy based serving for hmr
+      web_proxy: "http://localhost:3000"

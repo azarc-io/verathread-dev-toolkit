@@ -78,7 +78,7 @@ jobs:
           version: "~> v1"
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           GORELEASER_CURRENT_TAG: ${{ steps.tag.outputs.tag }}
       - name: "Deploy to GitHub Pages"
         id: deployment

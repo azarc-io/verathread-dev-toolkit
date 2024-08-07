@@ -17,9 +17,11 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     permissions:
-      contents: read
+      contents: write
       pages: write
       id-token: write
+      deployments: write
+      packages: write
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -78,7 +80,7 @@ jobs:
           version: "~> v1"
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           GORELEASER_CURRENT_TAG: ${{ steps.tag.outputs.tag }}
       - name: "Deploy to GitHub Pages"
         id: deployment

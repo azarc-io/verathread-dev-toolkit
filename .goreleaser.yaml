@@ -3,8 +3,8 @@ release:
     owner: azarc-io
     name: verathread-dev-toolkit
   name_template: '{{.Tag}}'
-  extra_files:
-    - glob: bin/site.zip
+#  extra_files:
+#    - glob: bin/site.zip
 builds:
   - id: vdt-cli
     goos:

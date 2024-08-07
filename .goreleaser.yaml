@@ -1,7 +1,7 @@
 release:
   github:
     owner: azarc-io
-    name: vdt-cli
+    name: verathread-dev-toolkit
   name_template: '{{.Tag}}'
 builds:
   - id: vdt-cli

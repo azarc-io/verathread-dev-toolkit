@@ -54,10 +54,6 @@ jobs:
         run: |
           pip install --upgrade pip
           task docs:install:deps
-      - name: "Write Latest Version"
-        run: |
-          mkdir -p bin
-          echo ${{ steps.tag.outputs.tag }} >> bin/latest.txt
       - name: "Build Docs"
         working-directory: docs
         run: task docs:build
@@ -73,6 +69,10 @@ jobs:
           WITH_V: true
           DEFAULT_BUMP: minor
           INITIAL_VERSION: 1.0.0
+      - name: "Write Latest Version"
+        run: |
+          mkdir -p bin
+          echo ${{ steps.tag.outputs.tag }} >> bin/latest.txt
       - name: "Create Site Package"
         run: |
           mkdir -p bin

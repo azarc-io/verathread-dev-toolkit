@@ -86,14 +86,10 @@ jobs:
           distribution: goreleaser
           # 'latest', 'nightly', or a semver
           version: "~> v1"
-          args: build --clean
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GORELEASER_CURRENT_TAG: ${{ steps.tag.outputs.tag }}
-      - name: "Upload artifact"
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'bin/cli/vdt-*'
 
   e2e:
     name: "E2E Tests"

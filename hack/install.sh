@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-APP_NAME="vth2"
-REPO_URL="https://vdt-artifacts.s3-eu-west-1.amazonaws.com/cli_v2"
+APP_NAME="vdt"
+REPO_URL="https://vth-artifacts.s3-eu-west-1.amazonaws.com/vdt"
 
 : ${VTH_INSTALL_DIR:="/usr/local/bin"}
 : ${USE_SUDO:="true"}
@@ -77,7 +77,7 @@ checkLatestVersion() {
 # downloadFile downloads the latest binary package and also the checksum
 # for that binary.
 downloadFile() {
-  VTH_DIST="vdt-cli-$TAG-$OS-$ARCH.tar.gz"
+  VTH_DIST="vth-cli-$TAG-$OS-$ARCH.tar.gz"
   DOWNLOAD_URL="$REPO_URL/v$TAG/$VTH_DIST"
   VTH_TMP_ROOT="$(mktemp -dt vdt-binary-XXXXXX)"
   VTH_TMP_FILE="$VTH_TMP_ROOT/$VTH_DIST"

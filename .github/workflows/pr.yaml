@@ -71,6 +71,12 @@ jobs:
         with:
           cache-dependency-path: go.sum
           go-version-file: go.mod
+      - name: "AWS Credentials"
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
       - name: "Create Release Tag"
         uses: anothrNick/github-tag-action@1.67.0
         id: tag
@@ -79,6 +85,8 @@ jobs:
           WITH_V: true
           DEFAULT_BUMP: minor
           PRERELEASE: false
+      - name: "Write Latest Version"
+        run: echo ${{ steps.tag.outputs.tag }} >> bin/latest.txt
       - name: "Run Go Releaser"
         uses: goreleaser/goreleaser-action@v6
         with:

@@ -17,27 +17,18 @@ builds:
     binary: vdt-{{.Os}}-{{.Arch}}
     env:
       - CGO_ENABLED=0
-#archives:
-#  - name_template: vth-cli-{{ .Version }}-{{ .Os }}-{{ .Arch }}
-#    replacements:
-#      "386": i386
-#      amd64: x86_64
-#      darwin: Darwin
-#      linux: Linux
-#      windows: Windows
-#    strip_parent_binary_folder: true
-#blobs:
-#  - bucket: vth-artifacts
-#    provider: s3
-#    region: eu-west-1
-#    folder: cli_v2/v{{.Version}}
-#  - bucket: vth-artifacts
-#    provider: s3
-#    region: eu-west-1
-#    folder: cli_v2
-#    ids:
-#      - none
-#    extra_files:
-#      - glob: hack/install.sh
-#      - glob: bin/latest.txt
+blobs:
+  - bucket: vth-artifacts
+    provider: s3
+    region: eu-west-1
+    folder: vdt/v{{.Version}}
+  - bucket: vdt-artifacts
+    provider: s3
+    region: eu-west-1
+    folder: vdt
+    ids:
+      - none
+    extra_files:
+      - glob: hack/install.sh
+      - glob: bin/latest.txt
 dist: bin/cli

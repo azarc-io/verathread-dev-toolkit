@@ -15,13 +15,18 @@ env:
 
 tasks:
   ##############################################################################
-  # CLI DEV
+  # CLI
   ##############################################################################
 
   dev:cli:
     desc: "builds the cli and watches for changes"
     cmds:
       - fswatch -config .fsw.task.yml
+
+  release:cli:
+    desc: "builds the cli and watches for changes"
+    cmds:
+      - goreleaser
 
   ##############################################################################
   # SETUP

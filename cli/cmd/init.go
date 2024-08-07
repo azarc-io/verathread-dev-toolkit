@@ -152,6 +152,10 @@ func (i *InitCmd) Cmd(cmd *cobra.Command, args []string) error {
 	return i.runProgram()
 }
 
+/************************************************************************/
+/* COMMAND HELPERS
+/************************************************************************/
+
 func (i *InitCmd) validatePort(minLength int, name string) func(port string) error {
 	return func(port string) error {
 		if len(port) < 4 {
@@ -207,6 +211,10 @@ func (i *InitCmd) runProgram() error {
 
 	return nil
 }
+
+/************************************************************************/
+/* COMMAND FACTORY
+/************************************************************************/
 
 func NewInitCmd() *InitCmd {
 	return &InitCmd{}

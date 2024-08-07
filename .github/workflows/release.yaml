@@ -61,6 +61,10 @@ jobs:
       - name: "Build Docs"
         working-directory: docs
         run: task docs:build
+      - name: "Upload artifact"
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'docs/site'
       - name: "Bump version and push tag"
         uses: anothrNick/github-tag-action@1.67.0
         id: tag

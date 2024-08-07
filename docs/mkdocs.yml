@@ -54,6 +54,7 @@ nav:
 - Services:
     - services/mongo.md
     - services/nats.md
+    - services/redis.md
 - Community:
     - contributing.md
 

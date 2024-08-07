@@ -56,20 +56,44 @@ jobs:
       - name: "Build Docs"
         working-directory: docs
         run: task docs:build
-      - name: "Lint"
-        uses: golangci/golangci-lint-action@v6.0.1
+
+  build-cli:
+    name: "Build CLI"
+    runs-on: ubuntu-latest-4-cores
+    env:
+      GOLANGCILINT_VER: "v1.59.1"
+      GOPRIVATE: "github.com/azarc-io"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+      - name: "Setup Go"
+        uses: actions/setup-go@v5
         with:
-          version: ${{ env.GOLANGCILINT_VER }}
-          skip-cache: true
+          cache-dependency-path: go.sum
+          go-version-file: go.mod
+      - name: "Write Latest Version"
+        run: |
+          mkdir -p bin
+          echo ${{ steps.tag.outputs.tag }} >> bin/latest.txt
+      - name: "Run Go Releaser"
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v1"
+          args: build --snapshot --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   e2e:
     name: "E2E Tests"
     runs-on: ubuntu-latest-4-cores
     needs:
       - verify
+      - build-cli
     env:
       REGISTRY_PORT: 5000
       REGISTRY_NAME: kind-registry
+      GHCR_DOCKER_TOKEN: ${{ secrets.GHCR_DOCKER_TOKEN }}
     # if: github.event_name != 'pull_request'
     steps:
       - name: "Checkout"
@@ -109,7 +133,7 @@ jobs:
       - name: "Install dependencies"
         run: task k3d:install:charts
       - name: "Run E2E tests"
-        run: task test
+        run: task test:e2e
       - name: "Capture logs"
         if: always()
         run: |
@@ -117,7 +141,8 @@ jobs:
           mkdir -p bin/logs
           kubectl logs -l 'app=mongodb' --tail=-1 -n test-dev > bin/logs/mongo.log --all-containers
           kubectl logs -l 'app.kubernetes.io/name=nats' --tail=-1 -n test-dev > bin/logs/nats.log --all-containers
-          kubectl logs -l 'app.kubernetes.io/name=dapr' --tail=-1 -n dapr-system > bin/logs/dapr.log --all-containers
+          kubectl logs -l 'app.kubernetes.io/name=keydb' --tail=-1 -n test-dev > bin/logs/keydb.log --all-containers
+          kubectl logs -l 'app.kubernetes.io/name=gateway' --tail=-1 -n dapr-system > bin/logs/gateway.log --all-containers
       - name: "Upload test results"
         if: always()
         uses: actions/upload-artifact@v4

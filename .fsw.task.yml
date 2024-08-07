@@ -1,0 +1,18 @@
+desc: app
+triggers:
+  - name: ""
+    pattens:
+      - '**/*.go'
+      - '**/*.yaml'
+    env:
+      DEBUG: "1"
+      GOPRIVATE: "github.com/azarc-io"
+    cmd: go build -o /usr/local/bin/vdt cli/main.go && chmod 775 /usr/local/bin/vdt
+    shell: true
+    delay: 100ms
+    stop_timeout: 500ms
+    signal: "SIGTERM"
+    kill_signal: "SIGTERM"
+watch_paths:
+  - .
+watch_depth: 5

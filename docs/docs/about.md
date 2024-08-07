@@ -16,6 +16,7 @@ See the roadmap for current and future features.
 - [x] Automated Chart installation of dependencies
 - [x] Mongo Database
 - [x] Nats Messaging
-- [x] Dapr Control Plane
+- [x] Redis Cache
+- [x] Application Gateway
 - [ ] Minio Bucket Storage (S3 Compatible)
 - [ ] Fine-grained dependency installation, install only what you need and easily toggle needed dependencies

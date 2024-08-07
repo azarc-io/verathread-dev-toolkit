@@ -1,0 +1,41 @@
+release:
+  github:
+    owner: azarc-io
+    name: verathread-dev-toolkit
+  name_template: '{{.Tag}}'
+  extra_files:
+    - glob: bin/site.zip
+builds:
+  - id: vdt-cli
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    dir: .
+    main: cli/main.go
+    no_unique_dist_dir: true
+    binary: vdt-{{.Os}}-{{.Arch}}
+    env:
+      - CGO_ENABLED=0
+blobs:
+  - bucket: vth-artifacts
+    provider: s3
+    region: eu-west-1
+    directory: vdt/v{{.Version}}
+  - bucket: vth-artifacts
+    provider: s3
+    region: eu-west-1
+    directory: vdt
+    ids:
+      - none
+    extra_files:
+      - glob: hack/install.sh
+      - glob: bin/latest.txt
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+
+dist: bin/cli

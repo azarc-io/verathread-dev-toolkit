@@ -58,7 +58,7 @@ jobs:
         run: task docs:build
 
   cli:
-    name: "Verify Docs"
+    name: "Build CLI"
     runs-on: ubuntu-latest
     env:
       GOLANGCILINT_VER: "v1.59.1"
@@ -78,7 +78,7 @@ jobs:
           distribution: goreleaser
           # 'latest', 'nightly', or a semver
           version: "~> v1"
-          args: release --clean
+          args: build --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "Upload artifact"

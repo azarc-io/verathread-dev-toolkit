@@ -21,11 +21,11 @@ blobs:
   - bucket: vth-artifacts
     provider: s3
     region: eu-west-1
-    folder: vdt/v{{.Version}}
-  - bucket: vdt-artifacts
+    directory: vdt/v{{.Version}}
+  - bucket: vth-artifacts
     provider: s3
     region: eu-west-1
-    folder: vdt
+    directory: vdt
     ids:
       - none
     extra_files:

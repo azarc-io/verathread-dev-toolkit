@@ -76,7 +76,7 @@ checkLatestVersion() {
 # downloadFile downloads the latest binary package and also the checksum
 # for that binary.
 downloadFile() {
-  VTH_DIST="verathread-dev-toolkit-$OS-$ARCH.tar.gz"
+  VTH_DIST="verathread-dev-toolkit_${OS}_${ARCH}.tar.gz"
   DOWNLOAD_URL="$REPO_URL/$TAG/$VTH_DIST"
   VTH_TMP_ROOT="$(mktemp -dt vdt-binary-XXXXXX)"
   VTH_TMP_FILE="$VTH_TMP_ROOT/$VTH_DIST"
@@ -91,11 +91,12 @@ downloadFile() {
 # installFile verifies the SHA256 for the file, then unpacks and
 # installs it.
 installFile() {
-  echo "Preparing to install $VTH_TMP_FILE into ${VTH_INSTALL_DIR}"
+  echo "Preparing to install $APP_NAME into ${VTH_INSTALL_DIR}"
   tar -xf "$VTH_TMP_FILE"
   rm -f "$VTH_INSTALL_DIR/$APP_NAME"
-  runAsRoot chmod 755 "$APP_NAME"
-  runAsRoot cp "$APP_NAME" "$VTH_INSTALL_DIR/$APP_NAME"
+  runAsRoot chmod 755 "${APP_NAME}-${OS}-${ARCH}"
+  runAsRoot cp "${APP_NAME}-${OS}-${ARCH}" "$VTH_INSTALL_DIR/$APP_NAME"
+  rm -f "${APP_NAME}-${OS}-${ARCH}"
   echo "$APP_NAME installed into $VTH_INSTALL_DIR/$APP_NAME"
 }
 

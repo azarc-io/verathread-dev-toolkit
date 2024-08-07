@@ -86,7 +86,9 @@ jobs:
           DEFAULT_BUMP: minor
           PRERELEASE: false
       - name: "Write Latest Version"
-        run: echo ${{ steps.tag.outputs.tag }} >> bin/latest.txt
+        run: |
+          mkdir -p bin
+          echo ${{ steps.tag.outputs.tag }} >> bin/latest.txt
       - name: "Run Go Releaser"
         uses: goreleaser/goreleaser-action@v6
         with:

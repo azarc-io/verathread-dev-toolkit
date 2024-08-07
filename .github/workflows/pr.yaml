@@ -57,6 +57,35 @@ jobs:
         working-directory: docs
         run: task docs:build
 
+  cli:
+    name: "Verify Docs"
+    runs-on: ubuntu-latest
+    env:
+      GOLANGCILINT_VER: "v1.59.1"
+      GOPRIVATE: "github.com/azarc-io"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+      - name: "Setup Go"
+        uses: actions/setup-go@v5
+        with:
+          cache-dependency-path: go.sum
+          go-version-file: go.mod
+      - name: "Run Go Releaser"
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          # either 'goreleaser' (default) or 'goreleaser-pro'
+          distribution: goreleaser
+          # 'latest', 'nightly', or a semver
+          version: "~> v1"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Upload artifact"
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'bin/cli/vdt-*'
+
   e2e:
     name: "E2E Tests"
     runs-on: ubuntu-latest-4-cores

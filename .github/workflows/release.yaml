@@ -12,7 +12,7 @@ env:
 jobs:
   release:
     name: "Tag & Release Documentation"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-4-cores
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -23,6 +23,12 @@ jobs:
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
+      - name: "AWS Credentials"
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
       - name: "Setup Pages"
         uses: actions/configure-pages@v5
       - name: "Setup Python"
@@ -31,6 +37,11 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
           cache-dependency-path: docs/requirements.txt
+      - name: "Setup Go"
+        uses: actions/setup-go@v5
+        with:
+          cache-dependency-path: go.sum
+          go-version-file: go.mod
       - name: "Setup task"
         uses: arduino/setup-task@v2
         with:
@@ -41,15 +52,11 @@ jobs:
         run: |
           pip install --upgrade pip
           task docs:install:deps
-      - name: "Build"
+      - name: "Build Docs"
         working-directory: docs
         run: task docs:build
-      - name: "Upload artifact"
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'docs/site'
       - name: "Bump version and push tag"
-        uses: anothrNick/github-tag-action@1.62.0
+        uses: anothrNick/github-tag-action@1.67.0
         id: tag
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -60,14 +67,15 @@ jobs:
         run: |
           mkdir -p bin
           zip -r bin/site.zip docs/site
-      - name: "Create Release"
-        uses: softprops/action-gh-release@v2
+      - name: "Release VDT"
+        uses: goreleaser/goreleaser-action@v6
         with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          generate_release_notes: true
-          repository: azarc-io/verathread-dev-toolkit
-          token: ${{ secrets.PAT_TOKEN }}
-          files: bin/site.zip
+          distribution: goreleaser
+          version: "~> v1"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GORELEASER_CURRENT_TAG: ${{ steps.tag.outputs.tag }}
       - name: "Deploy to GitHub Pages"
         id: deployment
         uses: actions/deploy-pages@v4

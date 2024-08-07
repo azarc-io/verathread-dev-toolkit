@@ -57,7 +57,7 @@ jobs:
         working-directory: docs
         run: task docs:build
 
-  cli:
+  build-cli:
     name: "Build CLI"
     runs-on: ubuntu-latest-4-cores
     env:
@@ -71,20 +71,6 @@ jobs:
         with:
           cache-dependency-path: go.sum
           go-version-file: go.mod
-      - name: "AWS Credentials"
-        uses: aws-actions/configure-aws-credentials@v1-node16
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: "Create Release Tag"
-        uses: anothrNick/github-tag-action@1.67.0
-        id: tag
-        env:
-          GITHUB_TOKEN:  ${{ secrets.GITHUB_TOKEN }}
-          WITH_V: true
-          DEFAULT_BUMP: minor
-          PRERELEASE: false
       - name: "Write Latest Version"
         run: |
           mkdir -p bin
@@ -92,21 +78,18 @@ jobs:
       - name: "Run Go Releaser"
         uses: goreleaser/goreleaser-action@v6
         with:
-          # either 'goreleaser' (default) or 'goreleaser-pro'
           distribution: goreleaser
-          # 'latest', 'nightly', or a semver
           version: "~> v1"
-          args: release --clean
+          args: build --snapshot --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GORELEASER_CURRENT_TAG: ${{ steps.tag.outputs.tag }}
 
   e2e:
     name: "E2E Tests"
     runs-on: ubuntu-latest-4-cores
     needs:
       - verify
-      - cli
+      - build-cli
     env:
       REGISTRY_PORT: 5000
       REGISTRY_NAME: kind-registry

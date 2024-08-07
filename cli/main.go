@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/azarc-io/verathread-dev-toolkit/cli/cmd"
 	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
@@ -8,6 +9,8 @@ import (
 )
 
 var (
+	version string
+
 	rootCmd = &cobra.Command{
 		Use:   "vdt",
 		Short: "The Verathread development cli.",
@@ -23,14 +26,25 @@ var (
 		Args:  cobra.RangeArgs(0, 0),
 		RunE:  cmd.NewInitCmd().Cmd,
 	}
+
+	versionCmd = &cobra.Command{
+		Use:   "version",
+		Short: "Prints the version number of the CLI",
+		Args:  cobra.RangeArgs(0, 0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Print(version)
+			return nil
+		},
+	}
 )
 
 func init() {
-	rootCmd.Version = "1.0.0"
+	rootCmd.Version = version
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
 
 	rootCmd.AddCommand(
 		initCmd,
+		versionCmd,
 	)
 }
 

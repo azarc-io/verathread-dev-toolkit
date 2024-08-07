@@ -76,7 +76,7 @@ checkLatestVersion() {
 # downloadFile downloads the latest binary package and also the checksum
 # for that binary.
 downloadFile() {
-  VTH_DIST="verathread-dev-toolkit-$TAG-$OS-$ARCH.tar.gz"
+  VTH_DIST="verathread-dev-toolkit-$OS-$ARCH.tar.gz"
   DOWNLOAD_URL="$REPO_URL/$TAG/$VTH_DIST"
   VTH_TMP_ROOT="$(mktemp -dt vdt-binary-XXXXXX)"
   VTH_TMP_FILE="$VTH_TMP_ROOT/$VTH_DIST"

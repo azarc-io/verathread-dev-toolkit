@@ -11,6 +11,8 @@ builds:
     goarch:
       - amd64
       - arm64
+    ldflags:
+      - -s -w -X main.build={{.Version}}
     dir: .
     main: cli/main.go
     no_unique_dist_dir: true

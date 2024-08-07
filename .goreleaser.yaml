@@ -31,4 +31,7 @@ blobs:
     extra_files:
       - glob: hack/install.sh
       - glob: bin/latest.txt
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+
 dist: bin/cli

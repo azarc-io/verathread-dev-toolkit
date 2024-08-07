@@ -23,8 +23,7 @@ initArch() {
 
 # initOS discovers the operating system for this system.
 initOS() {
-  OS=$(uname|tr '[:upper:]' '[:upper:]')
-
+  OS=$(uname|tr '[:upper:]' '[:lower:]')
   case "$OS" in
     # Minimalist GNU for Windows
     mingw*) OS='windows';;
@@ -45,7 +44,7 @@ runAsRoot() {
 # verifySupported checks that the os/arch combination is supported for
 # binary builds.
 verifySupported() {
-  local supported="Darwin-x86_64\nLinux-x86_64\nDarwin-arm64\nLinux-arm64"
+  local supported="darwin-x86_64\nlinux-x86_64\ndarwin-arm64\nlinux-arm64"
   if ! echo "${supported}" | grep -q "${OS}-${ARCH}"; then
     echo "No prebuilt binary for ${OS}-${ARCH}."
     echo "To build from source, go to $REPO_URL"
@@ -77,8 +76,8 @@ checkLatestVersion() {
 # downloadFile downloads the latest binary package and also the checksum
 # for that binary.
 downloadFile() {
-  VTH_DIST="vth-cli-$TAG-$OS-$ARCH.tar.gz"
-  DOWNLOAD_URL="$REPO_URL/v$TAG/$VTH_DIST"
+  VTH_DIST="verathread-dev-toolkit-$TAG-$OS-$ARCH.tar.gz"
+  DOWNLOAD_URL="$REPO_URL/$TAG/$VTH_DIST"
   VTH_TMP_ROOT="$(mktemp -dt vdt-binary-XXXXXX)"
   VTH_TMP_FILE="$VTH_TMP_ROOT/$VTH_DIST"
   echo "Downloading ${DOWNLOAD_URL}"
@@ -92,7 +91,7 @@ downloadFile() {
 # installFile verifies the SHA256 for the file, then unpacks and
 # installs it.
 installFile() {
-  echo "Preparing to install $APP_NAME into ${VTH_INSTALL_DIR}"
+  echo "Preparing to install $VTH_TMP_FILE into ${VTH_INSTALL_DIR}"
   tar -xf "$VTH_TMP_FILE"
   rm -f "$VTH_INSTALL_DIR/$APP_NAME"
   runAsRoot chmod 755 "$APP_NAME"

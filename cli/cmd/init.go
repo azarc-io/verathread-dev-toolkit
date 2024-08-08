@@ -177,7 +177,10 @@ func (i *InitCmd) runProgram() error {
 	if err := filepath.WalkDir(i.pwd, func(path string, d fs.DirEntry, err error) error {
 		if !d.IsDir() && !strings.Contains(path, "node_modules") {
 			if strings.HasSuffix(path, ".go") ||
+				strings.HasSuffix(path, ".mod") ||
+				strings.HasSuffix(path, ".xml") ||
 				strings.HasSuffix(path, ".ts") ||
+				strings.HasSuffix(path, ".tsx") ||
 				strings.HasSuffix(path, ".html") ||
 				strings.HasSuffix(path, ".md") ||
 				strings.HasSuffix(path, ".yaml") ||
@@ -275,6 +278,9 @@ func (i *initProgram) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			log.Error("error while parsing file", "path", msg.path)
 			return nil, tea.Quit
 		}
+
+		// TODO add an input for the project owner in future for now this is ok cos used internally only
+		out = util.ReplaceGoPackages(out, "github.com/azarc-io", i.cmd.projectName)
 
 		if err := util.WriteFile([]byte(out), msg.path); err != nil {
 			log.Error("error while parsing file", "path", msg.path)

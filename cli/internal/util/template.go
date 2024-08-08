@@ -2,7 +2,9 @@ package util
 
 import (
 	"bytes"
+	"fmt"
 	"reflect"
+	"strings"
 	"text/template"
 )
 
@@ -81,4 +83,12 @@ func ParseTemplate(text string, params map[string]interface{}) (string, error) {
 	}
 
 	return tpl.String(), nil
+}
+
+func ReplaceGoPackages(content, owner, newName string) string {
+	return strings.ReplaceAll(
+		content,
+		fmt.Sprintf("%s/verathread-app-template", owner),
+		fmt.Sprintf("%s/%s", owner, newName),
+	)
 }

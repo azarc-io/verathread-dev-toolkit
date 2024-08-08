@@ -12,7 +12,7 @@ env:
 jobs:
   release:
     name: "Tag & Release Documentation"
-    runs-on: ubuntu-latest-4-cores
+    runs-on: custom-ubuntu-20.04-4core
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

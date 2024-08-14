@@ -43,7 +43,7 @@
       - ./.data/nats:/data
 
   gateway:
-    image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:v1.67.0
+    image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:${GATEWAY_VERSION:-v1.68.0}
     ports:
       - "6010:6010"
       - "6011:6011"

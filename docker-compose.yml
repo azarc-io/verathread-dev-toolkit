@@ -38,7 +38,11 @@
     image: nats
     ports:
       - "4222:4222"
-    command: "--cluster_name dev"
+    command:
+      - "--cluster_name=dev"
+      - "--name=dev"
+      - "--jetstream"
+      - "--store_dir=/data"
     volumes:
       - ./.data/nats:/data
 

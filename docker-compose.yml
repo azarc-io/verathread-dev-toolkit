@@ -47,11 +47,14 @@
       - ./.data/nats:/data
 
   gateway:
-    image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:${GATEWAY_VERSION:-v1.76.0}
+    image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:${GATEWAY_VERSION:-v1.83.0}
     ports:
       - "6010:6010"
       - "6011:6011"
       - "3000:3000"
+    environment:
+      CLOUD_GATEWAY: ${CLOUD_GATEWAY}
+      INSTALLATION_TOKEN: ${INSTALLATION_TOKEN}
     depends_on:
       - mongodb
       - keydb

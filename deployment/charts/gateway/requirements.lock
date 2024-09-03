@@ -1,6 +1,6 @@
 dependencies:
 - name: vth-gateway
   repository: https://azarc-io.github.io/helm-charts/
-  version: v1.84.0
-digest: sha256:1440a039537ac61371362e5c045933685a949ae309f4ac5a042b65241f03e051
-generated: "2024-09-03T07:18:37.161213+01:00"
+  version: v1.85.0
+digest: sha256:b2d584c0541ff14c68712c5200f67ab14515e62c381c4973a1e3f502fff88084
+generated: "2024-09-03T11:09:16.080358+01:00"

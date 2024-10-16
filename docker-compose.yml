@@ -47,17 +47,30 @@
       - ./.data/nats:/data
 
   gateway:
-    image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:${GATEWAY_VERSION:-v1.91.0}
+    image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:${GATEWAY_VERSION:-v1.106.0}
     ports:
       - "6010:6010"
       - "6011:6011"
       - "3000:3000"
     environment:
-      CLOUD_GATEWAY: ${CLOUD_GATEWAY:-https://cloud.azarc.dev}
+      CLOUD_GATEWAY: ${CLOUD_GATEWAY:-https://azarc.cloud.azarc.dev}
       INSTALLATION_TOKEN: ${INSTALLATION_TOKEN:-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhaWQiOiIzNjM5MzI2NC0zOTMyLTQ2NjQtYjc2Mi0zNzM1MzczMjM3MzciLCJhdWQiOiJ2dGgtbmV4dC1pbnN0YWxsYXRpb24iLCJleHAiOjIwNDAzOTIzMDYsImlhdCI6MTcyNDg1OTUwNiwiaXNzIjoidnRoLWNsb3VkLWFjY291bnQiLCJvaWQiOiIzNzMzNjQ2NC0zNDM2LTQyMzctYTUzNi0zMDY0MzMzODM4NjEiLCJvcmdfZG9tYWluIjoiYXphcmMiLCJwcm92aWRlcl9hdWQiOiJodHRwczovL3ZlcmF0aHJlYWQuY29tL2FwaS92ZXJpZnkiLCJwcm92aWRlcl9jbGFpbXNfa2V5IjoiaHR0cHM6Ly92ZXJhdGhyZWFkLmNvbS9jbGFpbXMiLCJwcm92aWRlcl9jbGllbnRfaWQiOiJETGY2N1FXMHRVTWk2ZHJoZHJ6bHExUVdSS2Qya0RWYyIsInByb3ZpZGVyX2RvbWFpbiI6Imh0dHBzOi8vZGV2LWlxM2I5d2RsLnVzLmF1dGgwLmNvbSIsInByb3ZpZGVyX2lzcyI6Imh0dHBzOi8vZGV2LWlxM2I5d2RsLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJuZXh0In0.nlRThhuEC1X5-RUyXPAnfgXkjbRXZ81LtjEgQH-G0uyXfrMfT8UJqFsHRHHVZCCzZe8yooZyrXYihVhBU45FyjuyXmoNU_2bQ4Skgtoe_pcht1d_KJH6oWfoT2lppOtNC0ZU9nflpJiN-5NSB70Qt4Xy45jC8Kmx6abAIxk1J-KR7RedV04APwV3ZdYPY3JN5r9I8y7LrfshsHnr6KgEygrS4th8cYqC7ttR8VkVDvK0dHlNVc5-t3D5FVt9ixHu6i_w6QIS6W9rjKnCvd3ozYplTitQIZool2ymHkSwBhbgjrugFk7YgP6lD8Y1Gt-u2hdmdytruWFistDcrq2xgA}
     volumes:
       - ./.data/gateway/node_modules:/web/node_modules
     depends_on:
       - mongodb
+      - keydb
+      - nats
+
+  verathread:
+    image: ghcr.io/azarc-io/verathread-next/next-dev:${VERATHREAD_VERSION:-RPP-38-314-7d3044f9}
+    ports:
+      - "5010:5010"
+      - "5011:5011"
+    environment:
+      CLOUD_GATEWAY: ${CLOUD_GATEWAY:-https://azarc.cloud.dev.azarc.dev}
+    depends_on:
+      - mongodb
+      - gateway
       - keydb
       - nats

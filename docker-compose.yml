@@ -69,6 +69,11 @@
       - mongodb
       - keydb
       - nats
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:6010/health || exit 1
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
   verathread:
     image: ghcr.io/azarc-io/verathread-next/vth-next-dev:${VERATHREAD_VERSION:-RPP-40-365-688a4100}
@@ -79,7 +84,11 @@
       NATS_ADDRESS_CORE: ${NATS_ADDRESS_CORE:-nats://next-dev1:VerathreadNext2024!@nats:4222}
       CLOUD_GATEWAY: ${CLOUD_GATEWAY:-https://azarc.cloud.dev.azarc.dev}
     depends_on:
-      - mongodb
-      - gateway
-      - keydb
-      - nats
+      mongodb:
+        condition: service_started
+      gateway:
+        condition: service_healthy
+      keydb:
+        condition: service_started
+      nats:
+        condition: service_started

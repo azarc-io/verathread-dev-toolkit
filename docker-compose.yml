@@ -71,7 +71,7 @@
       - nats
 
   verathread:
-    image: ghcr.io/azarc-io/verathread-next/next-dev:${VERATHREAD_VERSION:-rpp-40-365-688a4100}
+    image: ghcr.io/azarc-io/verathread-next/vth-next-dev:${VERATHREAD_VERSION:-RPP-40-365-688a4100}
     ports:
       - "5010:5010"
       - "5011:5011"

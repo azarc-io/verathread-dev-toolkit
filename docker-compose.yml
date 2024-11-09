@@ -49,7 +49,7 @@
       - ./.data/nats:/data
       - ./bin/nats.conf:/etc/nats/nats.conf
     environment:
-      NATS_LEAF_CLOUD_ADDRESS: ${NATS_LEAF_CLOUD_ADDRESS:-nats://next-dev1:VerathreadNext2024!@k8s-traefik-traefik-a6c327b509-148cf5e545c85894.elb.eu-west-2.amazonaws.com:7425}
+      NATS_LEAF_CLOUD_ADDRESS: ${NATS_LEAF_CLOUD_ADDRESS:-"nats://next-dev1:VerathreadNext2024!@k8s-traefik-traefik-a6c327b509-148cf5e545c85894.elb.eu-west-2.amazonaws.com:7425"}
 
   gateway:
     image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:${GATEWAY_VERSION:-rpp-40-488-6eb46290}

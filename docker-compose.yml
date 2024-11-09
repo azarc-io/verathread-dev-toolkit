@@ -52,7 +52,7 @@
       NATS_LEAF_CLOUD_ADDRESS: ${NATS_LEAF_CLOUD_ADDRESS:-"nats://next-dev1:VerathreadNext2024!@k8s-traefik-traefik-a6c327b509-148cf5e545c85894.elb.eu-west-2.amazonaws.com:7425"}
 
   gateway:
-    image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:${GATEWAY_VERSION:-rpp-40-488-6eb46290}
+    image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:${GATEWAY_VERSION:-v1.113.0}
     ports:
       - "6010:6010"
       - "6011:6011"
@@ -76,7 +76,7 @@
       retries: 10
 
   verathread:
-    image: ghcr.io/azarc-io/verathread-next/vth-next-dev:${VERATHREAD_VERSION:-RPP-40-365-688a4100}
+    image: ghcr.io/azarc-io/verathread-next/vth-next-dev:${VERATHREAD_VERSION:-v1.10.0}
     ports:
       - "5010:5010"
       - "5011:5011"

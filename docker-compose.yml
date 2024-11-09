@@ -38,22 +38,30 @@
     image: nats
     ports:
       - "4222:4222"
+      - "6224:6224"
+      - "7224:7224"
+      - "7422:7422"
     command:
-      - "--cluster_name=dev"
+      - "--config=/etc/nats/nats.conf"
+      - "--cluster_name=next-dev"
       - "--name=dev"
-      - "--jetstream"
-      - "--store_dir=/data"
     volumes:
       - ./.data/nats:/data
+      - ./bin/nats.conf:/etc/nats/nats.conf
+    environment:
+      NATS_LEAF_CLOUD_ADDRESS: ${NATS_LEAF_CLOUD_ADDRESS:-"nats://next-dev1:VerathreadNext2024!@k8s-traefik-traefik-a6c327b509-148cf5e545c85894.elb.eu-west-2.amazonaws.com:7425"}
 
   gateway:
-    image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:${GATEWAY_VERSION:-v1.106.0}
+    image: ghcr.io/azarc-io/verathread-gateway/gateway-dev:${GATEWAY_VERSION:-rpp-40-488-6eb46290}
     ports:
       - "6010:6010"
       - "6011:6011"
       - "3000:3000"
     environment:
-      CLOUD_GATEWAY: ${CLOUD_GATEWAY:-https://azarc.cloud.azarc.dev}
+      OVERRIDE_ORG: ${OVERRIDE_ORG:-azarc}
+      NATS_ADDRESS_CORE: ${NATS_ADDRESS_CORE:-nats://next-dev1:VerathreadNext2024!@nats:4222}
+      CLOUD_GATEWAY: ${CLOUD_GATEWAY:-https://azarc.cloud.dev.azarc.dev}
+      VERIFICATION_TOKEN_B64: ${VERIFICATION_TOKEN_B64:-LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF1b3NTNXQ2UGRQenJjS0FXSlluRQpleTk3MHZ4UXFGeVc0VVJEcmZQb00yVzVVbDFHWnI0VEdWbkd5NlZJYjdtcnFHeHRsb01jcHJrNWZieFhLUm9yCkdMOHhPKzZtTnRJQkpnVm01eFo1TVZvYTFUUUo1Nm1kbldrV1ppblBVM2VwWEMrWVNidjltbmY0Mk9COEloS1IKTEk5UkhwZmFmMGczdjJ3QnRwSFJZOERla2YwWnZpelJ5ZWEvd3RKQzVQaUYzdTVTa2lVRFpvemcwVytMWVpwVwpRTzJ6L0R3Zm9hUGowVE9OYWZqMUJkQkp3ZEV0NGJEdm1qT3VtSDdsYTFudVRYYnE4T0t4czd5Qm1XQit0RmNjCjNpTGd4TGtlelRaVDQyMWQ2UVJHOXhPdE9zOGhXU1pDa2pXdG1sY3g2R0pGTzVOZWpuUGttbnBJc3gxaXpzV08KOFFJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==}
       INSTALLATION_TOKEN: ${INSTALLATION_TOKEN:-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhaWQiOiIzNjM5MzI2NC0zOTMyLTQ2NjQtYjc2Mi0zNzM1MzczMjM3MzciLCJhdWQiOiJ2dGgtbmV4dC1pbnN0YWxsYXRpb24iLCJleHAiOjIwNDAzOTIzMDYsImlhdCI6MTcyNDg1OTUwNiwiaXNzIjoidnRoLWNsb3VkLWFjY291bnQiLCJvaWQiOiIzNzMzNjQ2NC0zNDM2LTQyMzctYTUzNi0zMDY0MzMzODM4NjEiLCJvcmdfZG9tYWluIjoiYXphcmMiLCJwcm92aWRlcl9hdWQiOiJodHRwczovL3ZlcmF0aHJlYWQuY29tL2FwaS92ZXJpZnkiLCJwcm92aWRlcl9jbGFpbXNfa2V5IjoiaHR0cHM6Ly92ZXJhdGhyZWFkLmNvbS9jbGFpbXMiLCJwcm92aWRlcl9jbGllbnRfaWQiOiJETGY2N1FXMHRVTWk2ZHJoZHJ6bHExUVdSS2Qya0RWYyIsInByb3ZpZGVyX2RvbWFpbiI6Imh0dHBzOi8vZGV2LWlxM2I5d2RsLnVzLmF1dGgwLmNvbSIsInByb3ZpZGVyX2lzcyI6Imh0dHBzOi8vZGV2LWlxM2I5d2RsLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJuZXh0In0.nlRThhuEC1X5-RUyXPAnfgXkjbRXZ81LtjEgQH-G0uyXfrMfT8UJqFsHRHHVZCCzZe8yooZyrXYihVhBU45FyjuyXmoNU_2bQ4Skgtoe_pcht1d_KJH6oWfoT2lppOtNC0ZU9nflpJiN-5NSB70Qt4Xy45jC8Kmx6abAIxk1J-KR7RedV04APwV3ZdYPY3JN5r9I8y7LrfshsHnr6KgEygrS4th8cYqC7ttR8VkVDvK0dHlNVc5-t3D5FVt9ixHu6i_w6QIS6W9rjKnCvd3ozYplTitQIZool2ymHkSwBhbgjrugFk7YgP6lD8Y1Gt-u2hdmdytruWFistDcrq2xgA}
     volumes:
       - ./.data/gateway/node_modules:/web/node_modules
@@ -63,11 +71,12 @@
       - nats
 
   verathread:
-    image: ghcr.io/azarc-io/verathread-next/next-dev:${VERATHREAD_VERSION:-RPP-38-314-7d3044f9}
+    image: ghcr.io/azarc-io/verathread-next/vth-next-dev:${VERATHREAD_VERSION:-RPP-40-365-688a4100}
     ports:
       - "5010:5010"
       - "5011:5011"
     environment:
+      NATS_ADDRESS_CORE: ${NATS_ADDRESS_CORE:-nats://next-dev1:VerathreadNext2024!@nats:4222}
       CLOUD_GATEWAY: ${CLOUD_GATEWAY:-https://azarc.cloud.dev.azarc.dev}
     depends_on:
       - mongodb

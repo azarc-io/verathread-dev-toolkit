@@ -44,7 +44,7 @@
     command:
       - "--config=/etc/nats/nats.conf"
       - "--cluster_name=next-dev"
-      - "--name=dev"
+      - "--name=${NATS_NAME:-dev}"
     volumes:
       - ./.data/nats:/data
       - ./bin/nats.conf:/etc/nats/nats.conf

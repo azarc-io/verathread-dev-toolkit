@@ -35,7 +35,7 @@
     restart: unless-stopped
 
   nats:
-    image: nats
+    image: nats:2.10.22
     ports:
       - "4222:4222"
       - "6224:6224"

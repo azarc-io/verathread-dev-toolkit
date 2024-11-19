@@ -5,25 +5,108 @@ nats:
     enabled: false
   natsbox:
     enabled: true
-  nats:
-    externalAccess: false
-    limits:
-      maxPayload: "8mb"
+  config:
     jetstream:
       enabled: true
-      domain: local
-      fileStorage:
+      fileStore:
         enabled: true
-        size: 1Gi
-  cluster:
-    enabled: false
-    replicas: 1
-    noAdvertise: false
-  podAnnotations:
-    argocd.argoproj.io/sync-wave: "1"
+        pvc:
+          enabled: true
+          size: 5Gi
+    cluster:
+      enabled: true
+      replicas: 3
+      merge:
+        name: "cloud"
+    leafnodes:
+      enabled: true
+    merge:
+      max_payload: << 8MB >>
+      accounts:
+        cloud:
+          jetstream: enabled
+          users:
+            - user: cloud
+              password: pass
+          exports:
+            - stream: "tonext.ABBLQPUW4HVO2HMY346O3YMCXIJWFYHB3V3RB54JXJ3CKJFB3OW5PWDU.>"
+            - service: "$JS.FC.>"
+            - service: "$JS.API.>"
+              response: stream
+            - service: "verathread-cloud.verifyIdentity"
+            - service: "verathread-cloud.getUsersForOrg"
+            - service: "verathread-cloud.getAllOrgOwnersForAccount"
+            - service: "verathread-cloud.getAccountLogo"
+        next:
+          jetstream: enabled
+          users:
+            - user: next
+              password: pass
+          imports:
+            - stream:
+                account: cloud
+                subject: "tonext.ABBLQPUW4HVO2HMY346O3YMCXIJWFYHB3V3RB54JXJ3CKJFB3OW5PWDU.>"
+              to: "tonext.ABBLQPUW4HVO2HMY346O3YMCXIJWFYHB3V3RB54JXJ3CKJFB3OW5PWDU.>"
+            - service:
+                account: cloud
+                subject: "$JS.API.CONSUMER.*.cloud-account.cloud.ext.event.v1.account.>"
+              to: "$JS.cloud.API.CONSUMER.*.cloud-account.cloud.ext.event.v1.account.>"
+            - service:
+                account: cloud
+                subject: "$JS.API.CONSUMER.*.cloud-account.*.cloud.ext.event.v1.account.>"
+              to: "$JS.cloud.API.CONSUMER.*.cloud-account.*.cloud.ext.event.v1.account.>"
+            - service:
+                account: cloud
+                subject: "$JS.FC.>"
+              to: "$JS.FC.>"
+            - service:
+                account: cloud
+                subject: "verathread-cloud.verifyIdentity"
+            - service:
+                account: cloud
+                subject: "verathread-cloud.getUsersForOrg"
+            - service:
+                account: cloud
+                subject: "verathread-cloud.getAllOrgOwnersForAccount"
+            - service:
+                account: cloud
+                subject: "verathread-cloud.getAccountLogo"
+        next-dev:
+          jetstream: enabled
+          users:
+            - user: next-dev1
+              password: pass
+          imports:
+            - stream:
+                account: cloud
+                subject: "tonext.ABBLQPUW4HVO2HMY346O3YMCXIJWFYHB3V3RB54JXJ3CKJFB3OW5PWDU.>"
+              to: "tonext.ABBLQPUW4HVO2HMY346O3YMCXIJWFYHB3V3RB54JXJ3CKJFB3OW5PWDU.>"
+            - service:
+                account: cloud
+                subject: "$JS.API.CONSUMER.*.cloud-account.cloud.ext.event.v1.account.>"
+              to: "$JS.cloud.API.CONSUMER.*.cloud-account.cloud.ext.event.v1.account.>"
+            - service:
+                account: cloud
+                subject: "$JS.API.CONSUMER.*.cloud-account.*.cloud.ext.event.v1.account.>"
+              to: "$JS.cloud.API.CONSUMER.*.cloud-account.*.cloud.ext.event.v1.account.>"
+            - service:
+                account: cloud
+                subject: "$JS.FC.>"
+              to: "$JS.FC.>"
+            - service:
+                account: cloud
+                subject: "verathread-cloud.verifyIdentity"
+            - service:
+                account: cloud
+                subject: "verathread-cloud.getUsersForOrg"
+            - service:
+                account: cloud
+                subject: "verathread-cloud.getAllOrgOwnersForAccount"
 
 # exposes the service over node ports for local access (enabled only for local development)
 local: true
 
-secret:
-jetstream:
+# enable external routing
+routeUseWss: false
+routeUseLeaf: false
+routePortName: nats-leaf-dev1
